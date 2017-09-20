@@ -66,7 +66,7 @@
         return request;
       }
     };
-    
+
     describe('validate', function() {
       it('takes the request object as a parameter', function() {
         var request, response;
@@ -662,6 +662,10 @@
       it('does not apply clock skew correction when correctClockSkew is false', function() {
         var request, response;
         helpers.mockHttpResponse(400, {}, '');
+        service = new MockService({
+          maxRetries: 3,
+          correctClockSkew: false
+        });
         request = makeRequest();
         request.on('extractError', function(resp) {
           return resp.error = {
@@ -675,6 +679,7 @@
       it('does not retry other signature errors if clock is not skewed', function() {
         var request, response;
         helpers.mockHttpResponse(403, {}, '');
+        service.config.systemClockOffset = 0;
         request = makeRequest();
         request.on('extractError', function(resp) {
           return resp.error = {
